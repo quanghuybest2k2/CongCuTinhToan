@@ -1,0 +1,229 @@
+﻿@page "/tinhkhoanvay"
+@using System.Globalization;
+<!-- Tính tiền khoản vay -->
+<div class="container">
+    <h3>Tính toán khoản vay</h3>
+    <hr />
+    <br />
+    <div class="container">
+        <label>
+            <input type="radio" name="radioType" value="1" checked="checked" />
+            Trả trên dư nợ ban đầu
+        </label>
+        <div class="form-row">
+            <div class="col-md-4 mb-3">
+                <label>Số tiền vay <span>*</span></label>
+                <input type="text" class="form-control form-control-lg" placeholder="Số tiền vay" @bind="@SoTienVay" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>
+                    Thời hạn vay
+                    <span>*</span>
+                </label>
+                <select class="custom-select custom-select-lg" @bind="@ThoiHanVay">
+                    <option value="0" selected="selected" disabled="disabled" hidden="hidden">Thời hạn vay (Tháng)</option>
+                    @foreach (int i in selectOption)
+                    {
+                        <option value="@i">@i.ToString("0") Tháng</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>
+                    Lãi suất cho vay
+                    <span>*</span>
+                </label>
+                <input class="form-control form-control-lg" type="text" placeholder="%/năm" maxlength="5" @bind="@LaiSuatChoVay" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Ngày giải ngân<span>*</span></label>
+                <input class="form-control form-control-lg" type="date" placeholder="dd/mm/yyyy" @bind-value="@NgayGiaiNgan" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Số tiền lãi phải trả</label>
+                <p class="form-control form-control-lg">@SoTienLaiPhaiTra.ToString("#,##0")</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Số tiền gốc và lãi phải trả</label>
+                <p class="form-control form-control-lg">@SoTienGocVaLaiPhaiTra.ToString("#,##0")</p>
+            </div>
+            <!--button caculator and note-->
+            <div class="container bg-light">
+                <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-primary" @onclick="TinhToan">Tính toán khoản vay</button>
+                    @*<button type="button" class="btn btn-warning">Cancel</button>*@
+                </div>
+                <div class="content__note">
+                    <span class="note">
+                        Lưu ý: Bảng tính chỉ mang tính chất tham khảo
+                    </span>
+                </div>
+                <br />
+            </div>
+        </div>
+        @*table result*@
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Kì trả nợ</th>
+                    <th scope="col">Số gốc còn lại</th>
+                    <th scope="col">Gốc</th>
+                    <th scope="col">Lãi</th>
+                    <th scope="col">Tổng tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (flag)
+                {
+                    for (int i = 0; i <= ThoiHanVay; i++)
+                    {
+                        SoGocConLai = SoTienVay;
+                        SoTienVay -= TienGocPhaiTra;
+                <tr>
+                    @if (i == 0)
+                    {
+                        <th scope="row">0</th>
+                        <td>@NgayGiaiNgan.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    }
+                    else
+                    {
+                        NgayMoi = NgayMoi.AddMonths(1);
+                        <th scope="row">@i</th>
+                        <td>@NgayMoi.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)</td>
+                        <td>@SoGocConLai.ToString("#,##0")</td>
+                        <td>@TienGocPhaiTra.ToString("#,##0")</td>
+                        <td>@TienLaiHangThang.ToString("#,##0")</td>
+                        <td>@TongTienGocLai.ToString("#,##0")</td>
+                    }
+                </tr>
+                    }
+                }
+                <tr>
+                    <th colspan="2">Tổng tiền</th>
+                    <td scope="row"></td>
+                    <td>@TongTienGoc.ToString("#,##0")</td>
+                    <td>@TongTienLai.ToString("#,##0")</td>
+                    <td>@TongTien.ToString("#,##0")</td>
+                </tr>
+            </tbody>
+        </table>
+        @*end table*@
+    </div>
+</div>
+
+
+@code {
+
+    double SoTienVay = 0; // số tiền vay
+    int ThoiHanVay; // thời hạn vay
+    double LaiSuatChoVay; // lãi suất cho vay
+    double SoTienLaiPhaiTra = 0; // số tiền lãi phải trả
+    double SoTienGocVaLaiPhaiTra = 0; // số tiền gốc và lãi phải trả
+    double TienGocPhaiTra;
+    double TienLaiHangThang; // Tiền lãi hàng tháng
+    double SoGocConLai;
+    double TongTienGocLai;
+    double TongTienGoc;
+    double TongTienLai;
+    double TongTien;
+    
+    DateTime NgayGiaiNgan;
+    DateTime NgayMoi;
+    //string month = DateTime.Now.Month.ToString(); // lấy tháng hiện tại
+
+    // flag
+    private bool flag = false;
+    
+    protected override void OnInitialized()
+    {
+        NgayGiaiNgan = DateTime.Now;
+        NgayMoi = NgayGiaiNgan;
+    }
+
+    public void TinhToan()
+    {
+
+        flag = true;
+
+        double PhanTram = LaiSuatChoVay / 100;
+
+        //Tiền gốc phải trả = tiền vay / ThoiHanVay;
+        TienGocPhaiTra = SoTienVay / ThoiHanVay;
+
+        // Tiền lãi hằng tháng = Dư nợ gốc x Lãi suất vay/Thời gian vay
+        TienLaiHangThang = (SoTienVay * PhanTram) / 12;
+
+        // số gốc còn lại
+        //SoGocConLai = SoTienVay;
+
+        //tổng tiền
+        TongTienGocLai = TienGocPhaiTra + TienLaiHangThang;
+
+        // Tổng tiền gốc
+        TongTienGoc = TienGocPhaiTra * ThoiHanVay;
+
+        //Tổng tiền lãi
+        TongTienLai = TienLaiHangThang * ThoiHanVay;
+
+        // Tổng tiền toàn bộ
+        TongTien = TongTienGoc + TongTienLai;
+
+        // switch case
+        int soNgay = 0;
+        @switch (ThoiHanVay)
+        {
+            case 6:
+                // 180
+                soNgay = 180;
+                break;
+            case 12:
+                // 365
+                soNgay = 365;
+                break;
+            case 18:
+                // 540
+                soNgay = 540;
+                break;
+            case 24:
+                // 720
+                soNgay = 720;
+                break;
+            case 36:
+                // 1080
+                soNgay = 1080;
+                break;
+            case 60:
+                // 1800
+                soNgay = 1800;
+                break;
+        }
+        // Lãi tiền vay = Số tiền vay * lãi suất vay * số ngày thực tế trong 1 tháng/365 ngày
+        SoTienLaiPhaiTra = (SoTienVay * PhanTram * soNgay) / 365;
+        SoTienGocVaLaiPhaiTra = SoTienVay + SoTienLaiPhaiTra;
+
+    }
+    // mang option
+    private int[] selectOption = { 6, 12, 18, 24, 36, 60 };
+
+    // kết quả tiền lãi không đổi, chỉ tăng khi % lãi suất tăng
+
+    // ngay 30 va 31
+    //public static DateTime AddSmartMonths(this DateTime d, int nMonths)
+    //{
+    //    int year = d.Year;
+    //    int month = d.Month;
+    //    int day = d.Day;
+
+    //    if ((day == 30) && (day < DateTime.DaysInMonth(year, month)))
+    //        d = d.AddDays(1);
+    //    else if ((month == 1) && (day > 28))
+    //        d = new DateTime(year, month, 31);
+
+    //    return d.AddMonths(nMonths);
+    //}
+}

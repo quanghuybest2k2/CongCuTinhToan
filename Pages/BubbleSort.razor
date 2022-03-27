@@ -1,0 +1,45 @@
+﻿@page "/bubblesort"
+
+<h3>Thuật toán Bubble Sort Webassembly</h3>
+
+<div class="progress mb-2">
+    <div class="progress-bar" style="width: @((int)progress)%;" role="progressbar" aria-valuemin="0"></div>
+</div>
+
+
+@foreach (var item in ints)
+{
+    <div class="alert alert-info col-@item" p-1><span>@item</span></div>
+}
+
+@code {
+    List<int> ints;
+    Random r;
+    double currentPosition;
+    double progress => (currentPosition / ((ints.Count * (ints.Count - 1)) / 2)) * 100;
+    protected override void OnInitialized()
+    {
+        r = new Random();
+        ints = Enumerable.Range(1, 200).OrderBy(s => r.NextDouble()).ToList();
+        Sort();
+    }
+    public async Task Sort()
+    {
+        for (int i = 0; i < ints.Count; i++)
+        {
+            for (int t = i + 1; t < ints.Count; t++)
+            {
+                await Task.Delay(1);
+                if (ints[i] > ints[t])
+                {
+                    int local = ints[i];
+                    ints[i] = ints[t];
+                    ints[t] = local;
+                }
+                currentPosition++;
+                StateHasChanged();
+            }
+        }
+    }
+    // hiển thị thời gian hiện tại
+}

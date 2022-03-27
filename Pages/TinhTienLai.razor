@@ -1,0 +1,104 @@
+﻿@page "/tinhtienlai"
+<div class="container">
+    <h3>Tính lãi tiền gửi</h3>
+    <hr />
+    <br />
+    <div class="container">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Số tiền gửi <span>*</span></label>
+                <input type="text" class="form-control form-control-lg" placeholder="Số tiền gửi" @bind="@SoTienGui" />
+            </div>
+            <div class="form-group col-md-6">
+                <label>Kì hạn gửi <span>*</span></label>
+                <select class="custom-select custom-select-lg" @bind="@KyHanGui">
+                    <option value="0"
+                            selected="selected"
+                            disabled="disabled"
+                            hidden="hidden">
+                        Kỳ hạn gửi
+                    </option>
+                    @foreach (int i in selectOption)
+                    {
+                        <option value="@i">@i.ToString("0") Tháng</option>
+                    }
+                </select>
+            </div>
+            @*<div class="w-100"></div>*@
+            <div class="form-group col-md-6">
+                <label>Lãi suất tiền gửi <span>*</span></label>
+                <input class="form-control form-control-lg" type="text" placeholder="%/năm" maxlength="5" @bind="@LaiSuatGui" />
+            </div>
+            <div class="form-group col-md-6">
+                <label>Số tiền lãi dự tính <span>*</span></label>
+                <p class="form-control form-control-lg">@SoTienLaiDuTinh.ToString("#,##0")</p>
+            </div>
+            <!--button caculator and note-->
+            <div class="container bg-light">
+                <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-primary" @onclick="TinhToan">Tính lãi tiền gửi</button>
+                    @*<button type="button" class="btn btn-warning">Cancel</button>*@
+                </div>
+                <div class="content__note">
+                    <span class="note">
+                        Lưu ý: Bảng tính chỉ mang tính chất tham khảo và áp dụng cho
+                        hình thức trả lãi cuối kỳ
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    @*test form*@
+</div>
+
+@code {
+
+    double SoTienGui; // số tiền gửi
+    int KyHanGui; // kỳ hạn gửi
+    double LaiSuatGui; // lãi xuất gửi
+    double SoTienLaiDuTinh = 0;
+
+    public void TinhToan()
+    {
+        double PhanTram = LaiSuatGui / 100;
+        // Lãi tiền gửi = số tiền gửi * lãi suất gửi * số ngày thực tế trong kỳ/360 ngày
+        // Tổng lãi khách hàng nhận được 500.000.000 * 6.70% * 360 ngày / 360 ngày = 33.500.000 VNĐ
+
+        // switch case
+        int soNgay = 0;
+                                    @switch (KyHanGui)
+                                    {
+                                        case 6:
+                                            // 180
+                                            soNgay = 180;
+                                            break;
+                                        case 12:
+                                            // 360
+                                            soNgay = 360;
+                                            break;
+                                        case 18:
+                                            // 540
+                                            soNgay = 540;
+                                            break;
+                                        case 24:
+                                            // 720
+                                            soNgay = 720;
+                                            break;
+                                        case 36:
+                                            // 1080
+                                            soNgay = 1080;
+                                            break;
+                                        case 60:
+                                            // 1800
+                                            soNgay = 1800;
+                                            break;
+                                    }
+        SoTienLaiDuTinh = SoTienGui * PhanTram * soNgay / 360;
+    }
+
+    // mang option
+    private int[] selectOption = { 6, 12, 18, 24, 36, 60 };
+
+
+}

@@ -1,0 +1,67 @@
+﻿@page "/currency"
+<div class="container">
+    <h3 class="mb-5">Chuyển đổi tiền tệ</h3>
+
+    <div class="row mb-3">
+        <div class="col-3">
+            <div class="form-check">
+                <img src="flag/united.svg" style="width:50px; height: 30px;" alt="Flag united" />
+                <label>USA</label>
+            </div>
+        </div>
+        <div class="col-3 form-check">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">$</div>
+                </div>
+                <input type="number" @bind-value="USDCurrent" @bind-value:event="oninput" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <!-- end USD -->
+    <div class="row mb-3">
+        <div class="col-3">
+            <div class="form-check">
+                <img src="flag/vietnam.svg" style="width:50px; height: 30px;" alt="Flag united" />
+                <label>VND</label>
+            </div>
+        </div>
+        <div class="col-3 form-check">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">&#8363;</div> <!-- &#8363; ký hiệu đ -->
+                </div>             <!-- bind-value:event="oninput" => bắt sự kiện trả ra kết quả luôn -->
+                <input type="number" @bind-value="VNDCurrent" @bind-value:event="oninput" class="form-control" />
+            </div>
+        </div>
+    </div>
+    
+    <!-- end VND -->
+</div>
+@code {
+
+    double usd = 1;
+    double vnd = 23000;
+
+    public double VNDCurrent
+    {
+        get => vnd;
+        set
+        {
+            usd = value / 23000;
+            vnd = value;
+        }
+    }
+
+    public double USDCurrent
+    {
+        get => usd;
+        set
+        {
+            vnd = value * 23000;
+            usd = value;
+        }
+    }
+    // end tính toán tiền tệ
+    
+}

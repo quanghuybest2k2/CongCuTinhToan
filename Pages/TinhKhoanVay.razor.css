@@ -1,0 +1,23 @@
+﻿span {
+    color: #ae1c3f;
+}
+
+/*Nội dung lưu ý*/
+.content__note .note {
+    font-size: 14px;
+    color: #ae1c3f;
+    font-style: italic;
+    margin-top: 20px;
+    display: inline-block;
+    width: 100%;
+}
+
+button {
+    background-color: #ae1c3f;
+    border: 1px solid #ae1c3f;
+}
+
+    button:hover {
+        background-color: #333333;
+        border: 1px solid #333333;
+    }
